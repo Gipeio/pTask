@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Container } from '@mui/material';
+import { TextField, Button, Container, Paper, Typography } from '@mui/material';
 import { userLoginRequest, userLoginSuccess, userLoginFail } from '../redux/userSlice';
 
 const Login = () => {
@@ -24,7 +24,7 @@ const Login = () => {
       const data = await response.json();
       if (response.ok) {
         dispatch(userLoginSuccess(data));
-        navigate('/create-task'); // Redirige vers la page de création de tâche
+        navigate('/create-task');
       } else {
         dispatch(userLoginFail(data.message));
       }
@@ -34,27 +34,30 @@ const Login = () => {
   };
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary">
-          Login
-        </Button>
-      </form>
+    <Container maxWidth="sm">
+      <Paper style={{ padding: 20, marginTop: 20 }}>
+        <Typography variant="h5" align="center">Login</Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Login
+          </Button>
+        </form>
+      </Paper>
     </Container>
   );
 };
