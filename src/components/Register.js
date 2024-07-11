@@ -1,20 +1,18 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { TextField, Button, Container, Alert } from '@mui/material';
-import { userLoginRequest, userLoginSuccess, userLoginFail } from '../redux/userSlice';
 
-const Login = () => {
+const Register = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const dispatch = useDispatch();
-  const loading = useSelector((state) => state.user.loading);
+  const [successMessage, setSuccessMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    dispatch(userLoginRequest());
+    console.log('Register Request:', { username, password });
+
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -22,17 +20,22 @@ const Login = () => {
         body: JSON.stringify({ username, password }),
       });
 
+      console.log('Response:', response);
+
       if (!response.ok) {
         const errorData = await response.json();
+        console.log('Error Response:', errorData);
         throw new Error(errorData.message || 'Something went wrong');
       }
 
       const data = await response.json();
-      dispatch(userLoginSuccess(data));
-      setErrorMessage(''); // Clear any previous error messages
+      console.log('Success Response:', data);
+      setSuccessMessage('Registration successful. You can now log in.');
+      setErrorMessage('');
     } catch (error) {
-      dispatch(userLoginFail(error.message));
-      setErrorMessage(error.message); // Set the error message to be displayed
+      console.log('Catch Error:', error);
+      setErrorMessage(error.message);
+      setSuccessMessage('');
     }
   };
 
@@ -55,15 +58,16 @@ const Login = () => {
           margin="normal"
         />
         {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
-          {loading ? 'Loading...' : 'Login'}
+        {successMessage && <Alert severity="success">{successMessage}</Alert>}
+        <Button type="submit" variant="contained" color="primary">
+          Register
         </Button>
       </form>
-      <Button component="a" href="/register" color="secondary">
-        Register
+      <Button component="a" href="/login" color="secondary">
+        Login
       </Button>
     </Container>
   );
 };
 
-export default Login;
+export default Register;

@@ -30,7 +30,7 @@ const CreateTask = () => {
   };
 
   return (
-    <Container>
+    <Container className="container">
       <form onSubmit={handleSubmit}>
         <TextField
           label="Title"

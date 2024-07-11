@@ -19,7 +19,7 @@ router.post('/', authMiddleware, async (req, res) => {
     await task.save();
     res.status(201).json(task);
   } catch (err) {
-    res.status(400).send('Error creating task');
+    res.status(400).json({ message: 'Error creating task' });
   }
 });
 
@@ -29,7 +29,7 @@ router.get('/', authMiddleware, async (req, res) => {
     const tasks = await Task.find({ user: req.user.id });
     res.json(tasks);
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -38,11 +38,11 @@ router.put('/:id', authMiddleware, async (req, res) => {
   const { title, description, status, project, category } = req.body;
   try {
     let task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).send('Task not found');
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
     // Check if the task belongs to the user
     if (task.user.toString() !== req.user.id) {
-      return res.status(401).send('Not authorized');
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
     task = await Task.findByIdAndUpdate(
@@ -53,7 +53,7 @@ router.put('/:id', authMiddleware, async (req, res) => {
 
     res.json(task);
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
@@ -61,17 +61,17 @@ router.put('/:id', authMiddleware, async (req, res) => {
 router.delete('/:id', authMiddleware, async (req, res) => {
   try {
     let task = await Task.findById(req.params.id);
-    if (!task) return res.status(404).send('Task not found');
+    if (!task) return res.status(404).json({ message: 'Task not found' });
 
     // Check if the task belongs to the user
     if (task.user.toString() !== req.user.id) {
-      return res.status(401).send('Not authorized');
+      return res.status(401).json({ message: 'Not authorized' });
     }
 
     await task.remove();
     res.json({ message: 'Task removed' });
   } catch (err) {
-    res.status(500).send('Server error');
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
