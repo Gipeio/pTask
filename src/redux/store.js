@@ -4,7 +4,8 @@ import authMiddleware from './middleware';
 
 const store = configureStore({
   reducer: rootReducer,
-  middleware: [...getDefaultMiddleware(), authMiddleware],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware().concat(authMiddleware),
 });
 
 export default store;
