@@ -16,6 +16,9 @@ mongoose.connect('mongodb://localhost:27017/gestionnaire-de-taches', {
 });
 
 // Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/tasks', require('./routes/tasks'));
+
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
