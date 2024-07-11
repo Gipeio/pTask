@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTasksRequest, fetchTasksSuccess, fetchTasksFail } from '../redux/tasksSlice';
+import { fetchTasksRequest, fetchTasksSuccess, fetchTasksFail, updateTask, deleteTask } from '../redux/tasksSlice';
 import { List, ListItem, ListItemText, CircularProgress, Button } from '@mui/material';
-import Container from '@mui/material/Container';
 
 const TaskList = () => {
   const dispatch = useDispatch();
@@ -17,15 +16,9 @@ const TaskList = () => {
       try {
         const response = await fetch('/api/tasks', {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
         });
-
-        if (response.status === 401) {
-          throw new Error('Unauthorized');
-        }
-
         const data = await response.json();
         if (response.ok) {
           dispatch(fetchTasksSuccess(data));
@@ -40,8 +33,46 @@ const TaskList = () => {
     fetchTasks();
   }, [dispatch, token]);
 
+  const handleComplete = async (id) => {
+    try {
+      const response = await fetch(`/api/tasks/${id}/complete`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      const data = await response.json();
+      if (response.ok) {
+        dispatch(updateTask(data));
+      } else {
+        // Handle error
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      const response = await fetch(`/api/tasks/${id}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.ok) {
+        dispatch(deleteTask(id));
+      } else {
+        // Handle error
+      }
+    } catch (error) {
+      // Handle error
+    }
+  };
+
   return (
-    <Container className="container">
+    <div>
       {loading ? (
         <CircularProgress />
       ) : error ? (
@@ -51,13 +82,19 @@ const TaskList = () => {
           {tasks.map((task) => (
             <ListItem key={task._id}>
               <ListItemText primary={task.title} secondary={task.description} />
-              <Button variant="contained" color="primary">Complete</Button>
-              <Button variant="contained" color="secondary">Delete</Button>
+              {task.status !== 'completed' && (
+                <Button variant="contained" color="primary" onClick={() => handleComplete(task._id)}>
+                  Complete
+                </Button>
+              )}
+              <Button variant="contained" color="secondary" onClick={() => handleDelete(task._id)}>
+                Delete
+              </Button>
             </ListItem>
           ))}
         </List>
       )}
-    </Container>
+    </div>
   );
 };
 
