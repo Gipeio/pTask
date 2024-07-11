@@ -4,7 +4,7 @@ const userSlice = createSlice({
   name: 'user',
   initialState: {
     userInfo: null,
-    token: null,
+    token: localStorage.getItem('token') || null, // Récupère le token du localStorage
     loading: false,
     error: null,
   },
@@ -16,6 +16,7 @@ const userSlice = createSlice({
       state.loading = false;
       state.userInfo = action.payload.user;
       state.token = action.payload.token;
+      localStorage.setItem('token', action.payload.token); // Stocke le token dans le localStorage
     },
     userLoginFail: (state, action) => {
       state.loading = false;
@@ -24,6 +25,11 @@ const userSlice = createSlice({
     userLogout: (state) => {
       state.userInfo = null;
       state.token = null;
+      localStorage.removeItem('token'); // Supprime le token du localStorage
+    },
+    userLoadFromToken: (state, action) => {
+      state.userInfo = action.payload.user;
+      state.token = action.payload.token;
     },
   },
 });
@@ -33,6 +39,7 @@ export const {
   userLoginSuccess,
   userLoginFail,
   userLogout,
+  userLoadFromToken,
 } = userSlice.actions;
 
 export default userSlice.reducer;

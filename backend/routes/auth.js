@@ -2,44 +2,45 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const User = require('../models/User');
+const authMiddleware = require('../middleware/authMiddleware'); // Importer le middleware ici
 
 const router = express.Router();
 
 // Register
 router.post('/register', async (req, res) => {
   const { username, password } = req.body;
-  console.log('Register Request:', req.body);
   try {
-    const existingUser = await User.findOne({ username });
-    if (existingUser) {
-      return res.status(400).json({ message: 'User already exists' });
-    }
     const user = new User({ username, password });
     await user.save();
-    console.log('User registered successfully');
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).send('User registered successfully');
   } catch (err) {
-    console.error('Error registering user:', err);
-    res.status(400).json({ message: 'Error registering user' });
+    res.status(400).send('Error registering user');
   }
 });
 
 // Login
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
-  console.log('Login Request:', req.body);
   try {
     const user = await User.findOne({ username });
-    if (!user) return res.status(400).json({ message: 'User not found' });
+    if (!user) return res.status(400).send('User not found');
     const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) return res.status(400).json({ message: 'Invalid credentials' });
+    if (!isMatch) return res.status(400).send('Invalid credentials');
 
     const token = jwt.sign({ id: user._id }, 'secret', { expiresIn: '1h' });
-    console.log('Login successful');
-    res.json({ token, user: { id: user._id, username: user.username } });
+    res.json({ token });
   } catch (err) {
-    console.error('Server error:', err);
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).send('Server error');
+  }
+});
+
+// Get current user
+router.get('/me', authMiddleware, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('-password');
+    res.json({ user });
+  } catch (err) {
+    res.status(500).send('Server error');
   }
 });
 

@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { TextField, Button, Container, Alert } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { TextField, Button, Container } from '@mui/material';
 import { userLoginRequest, userLoginSuccess, userLoginFail } from '../redux/userSlice';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useDispatch();
-  const loading = useSelector((state) => state.user.loading);
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -21,18 +21,15 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Something went wrong');
-      }
-
       const data = await response.json();
-      dispatch(userLoginSuccess(data));
-      setErrorMessage(''); // Clear any previous error messages
+      if (response.ok) {
+        dispatch(userLoginSuccess(data));
+        navigate('/create-task'); // Redirige vers la page de création de tâche
+      } else {
+        dispatch(userLoginFail(data.message));
+      }
     } catch (error) {
       dispatch(userLoginFail(error.message));
-      setErrorMessage(error.message); // Set the error message to be displayed
     }
   };
 
@@ -54,14 +51,10 @@ const Login = () => {
           fullWidth
           margin="normal"
         />
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        <Button type="submit" variant="contained" color="primary" disabled={loading}>
-          {loading ? 'Loading...' : 'Login'}
+        <Button type="submit" variant="contained" color="primary">
+          Login
         </Button>
       </form>
-      <Button component="a" href="/register" color="secondary">
-        Register
-      </Button>
     </Container>
   );
 };
