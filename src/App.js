@@ -6,6 +6,7 @@ import Login from './components/Login';
 import TaskList from './components/TaskList';
 import CreateTask from './components/CreateTask';
 import { userLoadFromToken, userLogout } from './redux/userSlice';
+import Register from './components/Register';
 
 function App() {
   const dispatch = useDispatch();
@@ -38,6 +39,7 @@ function App() {
         <Navbar />
         <Routes>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
           <Route path="/tasks" element={<TaskList />} />
           <Route path="/create-task" element={<CreateTask />} />
           <Route path="/" element={<Navigate to="/login" />} />

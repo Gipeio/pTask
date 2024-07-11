@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { TextField, Button, Container, Paper, Typography } from '@mui/material';
+import { TextField, Button, Container, Paper, Typography, Alert } from '@mui/material';
 import { userLoginRequest, userLoginSuccess, userLoginFail } from '../redux/userSlice';
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -21,15 +22,25 @@ const Login = () => {
         },
         body: JSON.stringify({ username, password }),
       });
-      const data = await response.json();
+
+      const responseText = await response.text(); // Lire la réponse en tant que texte
+      let data;
+      try {
+        data = JSON.parse(responseText); // Essayer de parser le texte en JSON
+      } catch (error) {
+        throw new Error(responseText); // Si la réponse n'est pas du JSON, lancer une erreur avec le texte brut
+      }
+
       if (response.ok) {
         dispatch(userLoginSuccess(data));
         navigate('/create-task');
       } else {
         dispatch(userLoginFail(data.message));
+        setErrorMessage(data.message || 'Invalid credentials');
       }
     } catch (error) {
       dispatch(userLoginFail(error.message));
+      setErrorMessage(error.message || 'An error occurred');
     }
   };
 
@@ -53,6 +64,7 @@ const Login = () => {
             fullWidth
             margin="normal"
           />
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <Button type="submit" variant="contained" color="primary" fullWidth>
             Login
           </Button>

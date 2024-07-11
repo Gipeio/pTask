@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { TextField, Button, Container, Alert } from '@mui/material';
+import { TextField, Button, Container, Paper, Typography, Alert } from '@mui/material';
 
 const Register = () => {
   const [username, setUsername] = useState('');
@@ -28,7 +28,10 @@ const Register = () => {
         throw new Error(errorData.message || 'Something went wrong');
       }
 
-      const data = await response.json();
+      // Check if response body is empty
+      const responseText = await response.text();
+      const data = responseText ? JSON.parse(responseText) : {};
+
       console.log('Success Response:', data);
       setSuccessMessage('Registration successful. You can now log in.');
       setErrorMessage('');
@@ -40,32 +43,32 @@ const Register = () => {
   };
 
   return (
-    <Container>
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          fullWidth
-          margin="normal"
-        />
-        {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-        {successMessage && <Alert severity="success">{successMessage}</Alert>}
-        <Button type="submit" variant="contained" color="primary">
-          Register
-        </Button>
-      </form>
-      <Button component="a" href="/login" color="secondary">
-        Login
-      </Button>
+    <Container maxWidth="sm">
+      <Paper style={{ padding: 20, marginTop: 20 }}>
+        <Typography variant="h5" align="center">Register</Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            label="Username"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          <TextField
+            label="Password"
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            fullWidth
+            margin="normal"
+          />
+          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+          {successMessage && <Alert severity="success">{successMessage}</Alert>}
+          <Button type="submit" variant="contained" color="primary" fullWidth>
+            Register
+          </Button>
+        </form>
+      </Paper>
     </Container>
   );
 };

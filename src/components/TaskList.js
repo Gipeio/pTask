@@ -92,7 +92,7 @@ const TaskList = () => {
                   </Grid>
                   <Grid item xs={12}>
                     <Typography variant="body2">
-                      Status: {task.status} | Project: {task.project} | Category: {task.category}
+                      Status: {task.status}
                     </Typography>
                   </Grid>
                   <Grid item xs={12} container justifyContent="space-between">
