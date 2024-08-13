@@ -21,8 +21,6 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying...'
-                // Ici, tu pourrais déployer ton application
-                // Par exemple: sh 'scp target/my-app.war user@server:/path/to/deploy'
             }
         }
     }
