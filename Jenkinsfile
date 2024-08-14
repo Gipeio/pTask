@@ -13,8 +13,6 @@ pipeline {
         stage('Test') {
             steps {
                 echo 'Testing...'
-                // Ici, tu pourrais exécuter des tests unitaires
-                // Par exemple: sh 'mvn test'
             }
         }
 
