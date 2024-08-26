@@ -9,9 +9,16 @@ pipeline {
             }
         }
         stage('SonarQube Analysis') {
-            def scannerHome = tool 'SonarScanner';
-            withSonarQubeEnv() {
-            sh "${scannerHome}/bin/sonar-scanner"
+            steps {
+                script {
+                    // Définir la variable scannerHome
+                    def scannerHome = tool 'SonarScanner'
+                    
+                    // Exécuter le scanner avec l'environnement SonarQube
+                    withSonarQubeEnv('SonarQube') {
+                        sh "${scannerHome}/bin/sonar-scanner"
+                    }
+                }
             }
         }
         stage('Build') {
