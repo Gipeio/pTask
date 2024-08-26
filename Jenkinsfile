@@ -8,6 +8,12 @@ pipeline {
                 checkout scm
             }
         }
+        stage('SonarQube Analysis') {
+            def scannerHome = tool 'SonarScanner';
+            withSonarQubeEnv() {
+            sh "${scannerHome}/bin/sonar-scanner"
+            }
+        }
         stage('Build') {
             steps {
                 // Commande de build (à remplacer par la commande spécifique à ton projet)
