@@ -16,7 +16,7 @@ pipeline {
                     
                     // Exécuter le scanner avec l'environnement SonarQube
                     withSonarQubeEnv('SonarQube') {
-                        sh "${scannerHome}/bin/sonar-scanner"
+                        sh "${scannerHome}/bin/sonar-scanner -Dsonar.projectKey=project -Dsonar.projectName=project"
                     }
                 }
             }
